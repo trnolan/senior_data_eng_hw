@@ -1,0 +1,16 @@
+version: '3.2'
+
+services:
+  postgres:
+    build:
+      context: ./postgres
+      dockerfile: Dockerfile.postgres
+    ports:
+      - 5432:5432
+
+  load-script:
+    build:
+      context: ..
+      dockerfile: Dockerfile.python
+    volumes:
+      - ./:/app
