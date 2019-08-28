@@ -7,6 +7,13 @@ services:
       dockerfile: Dockerfile.postgres
     ports:
       - 5432:5432
+  
+  infra-wait:
+    image: waisbrot/wait
+    depends_on:
+      - postgres
+    environment:
+      - TARGERS=postgres:5432
 
   load-script:
     build:
