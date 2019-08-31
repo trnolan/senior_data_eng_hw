@@ -4,18 +4,17 @@ import os
 import psycopg2
 
 
-def load_data(csv_pattern, destination_db):
-    for file_name in glob.glob(csv_pattern):
-        cleaned_file = _clean_null_bytes(file_name)
-        _add_to_db(cleaned_file, destination_db)
-
-def _add_to_db(file, destination_db):
+def _get_db_connection():
     conn = psycopg2.connect(
         host=os.environ.get("DB_HOST"),
         user=os.environ.get("DB_USER"),
         password=os.environ.get("DB_PASSWORD"),
         dbname=os.environ.get("DB_NAME")
     )
+    return conn
+
+def _add_to_db(file, destination_db):
+    conn = _get_db_connection()
     cur = conn.cursor()
     with open(file, 'r') as f:
         # Skip header row
@@ -35,16 +34,15 @@ def _clean_null_bytes(csv_file):
             writer.writerow(row)
     return new_file
 
+def load_data(csv_pattern, destination_db):
+    for file_name in glob.glob(csv_pattern):
+        cleaned_file = _clean_null_bytes(file_name)
+        _add_to_db(cleaned_file, destination_db)
+
 def calculate_ad_scores():
     select_string = """SELECT ad_id, COUNT(event_id) as times_shown FROM marketing WHERE provider = (%s) GROUP BY marketing.ad_id ORDER BY times_shown DESC"""
     insert_string = """INSERT INTO ad_scores values (%s, %s, %s)"""
-    # TODO: Consolidate DB logic into shared class
-    conn = psycopg2.connect(
-        host=os.environ.get("DB_HOST"),
-        user=os.environ.get("DB_USER"),
-        password=os.environ.get("DB_PASSWORD"),
-        dbname=os.environ.get("DB_NAME")
-    )
+    conn = _get_db_connection()
     cur = conn.cursor()
     for provider in ["Facebook", "Instagram", "Snapchat", "Spotify"]:
         select_val = cur.execute(select_string, (provider,))
