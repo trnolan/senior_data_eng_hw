@@ -13,11 +13,19 @@ services:
     depends_on:
       - postgres
     environment:
-      - TARGERS=postgres:5432
+      - TARGETS=postgres:5432
 
   load-script:
     build:
       context: ..
       dockerfile: Dockerfile.python
+    environment:
+      DB_HOST: postgres
+      DB_NAME: postgres
+      DB_PASSWORD: password
+      DB_USER: postgres
+      MARKETING_DB_NAME: marketing
+      TOTAL_NUM_ADS: 22
+      USER_DB_NAME: users
     volumes:
-      - ./:/app
+      - ../:/app
