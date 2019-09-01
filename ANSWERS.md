@@ -36,4 +36,4 @@ And then calculates a score for each ad shown on a provider ranked between 0 and
 ```
 SELECT ad_id, AVG(score) as avg_score from ad_scores group by ad_id ORDER BY avg_score DESC
 ```
-Can see that this gives a much different set with none of the spotify ads making the cut. Ad 1 is just outside the top 5 at number 6.  ad_id 20 only runs on Instagram but is the best ad there.  This method probably favors the ads that only run on a few providers as the step down isn't as big between each ad. Could change the algorithm to only award points for the top 5 ads on each provider in reverse order to alleviate this problem.
+Can see that this gives a much different set with none of the spotify ads making the cut. Ad 1 is just outside the top 5 at number 6.  ad_id 20 only runs on Instagram but is the best ad there.  This method favors the ads that run on a few providers with lots of ads. The step down isn't as big between each ad when there are more options. Could change the algorithm to only award points for the top 5 ads on each provider in reverse order to alleviate this problem.
